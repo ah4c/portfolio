@@ -404,6 +404,7 @@ public class Messages extends NLS
     public static String EditWizardQuoteFeedMsgLoading;
     public static String EditWizardQuoteFeedTitle;
     public static String ErrorKeyAlreadyUsed;
+    public static String EventListWidgetTitle;
     public static String ExportWizardAccountTransactions;
     public static String ExportWizardAllTransactionsAktienfreundeNet;
     public static String ExportWizardDescription;
@@ -935,6 +936,7 @@ public class Messages extends NLS
     public static String MsgErrorTradeCollectionWithErrors;
     public static String MsgErrorUpdating;
     public static String MsgHintNoAttributesConfigured;
+    public static String MsgHintNoEvents;
     public static String MsgIncorrectConvertedSubTotal;
     public static String MsgIncorrectSubTotal;
     public static String MsgIncorrectTotal;

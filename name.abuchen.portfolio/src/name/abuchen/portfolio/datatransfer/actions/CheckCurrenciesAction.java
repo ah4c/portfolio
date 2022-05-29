@@ -141,6 +141,11 @@ public class CheckCurrenciesAction implements ImportAction
             {
                 String grossValueCurrencyCode = grossValue.get().getForex() != null
                                 ? grossValue.get().getForex().getCurrencyCode() : ""; //$NON-NLS-1$
+
+                System.out.println("checkGrossValueAndUnitsAgainstSecurity - grossValueCurrencyCode=" + grossValueCurrencyCode + ", transaction.amount=" + transaction.getAmount() //$NON-NLS-1$
+                                + ", transactionCurrency=" + transaction.getCurrencyCode() + ", securityCurrencyCode=" + securityCurrency
+                                + ", transaction=" + transaction + ", transaction.class=" + transaction.getClass());//$NON-NLS-1$
+                
                 return new Status(Status.Code.ERROR, MessageFormat.format(Messages.MsgCheckGrossValueUnitNotValid,
                                 grossValueCurrencyCode, securityCurrency));
             }
@@ -155,6 +160,11 @@ public class CheckCurrenciesAction implements ImportAction
         {
             // then gross value must be set
             Optional<Unit> grossValue = transaction.getUnit(Transaction.Unit.Type.GROSS_VALUE);
+
+            System.out.println("checkGrossValueAndUnitsAgainstSecurity - grossValueUnit=" + grossValue + ", transaction.amount=" + transaction.getAmount() //$NON-NLS-1$
+                                + ", transactionCurrency=" + transaction.getCurrencyCode() + ", securityCurrencyCode=" + securityCurrency
+                                + ", transaction=" + transaction + ", transaction.class=" + transaction.getClass());//$NON-NLS-1$
+
             if (!grossValue.isPresent())
                 return new Status(Status.Code.ERROR, MessageFormat.format(Messages.MsgCheckGrossValueUnitMissing,
                                 transaction.getCurrencyCode(), securityCurrency));

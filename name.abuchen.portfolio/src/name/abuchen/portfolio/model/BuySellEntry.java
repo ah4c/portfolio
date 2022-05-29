@@ -203,4 +203,19 @@ public class BuySellEntry implements CrossEntry, Annotated
     {
         return accountTransaction;
     }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("BuySellEntry [portfolio=").append(portfolio) //$NON-NLS-1$
+                        .append(", portfolioTransaction=").append(portfolioTransaction) //$NON-NLS-1$
+                        .append(", account=").append(account) //$NON-NLS-1$
+                        .append(", accountTransaction=").append(accountTransaction) //$NON-NLS-1$
+                        .append(", getNote()=").append(getNote()) //$NON-NLS-1$
+                        .append(", getSource()=").append(getSource()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+        return builder.toString();
+    }
+
+    
 }

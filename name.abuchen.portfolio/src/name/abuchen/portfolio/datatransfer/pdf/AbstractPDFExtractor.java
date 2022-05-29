@@ -195,6 +195,9 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (security == null)
             throw new IllegalArgumentException("Unable to construct security: " + values.toString()); //$NON-NLS-1$
 
+        System.out.println("getOrCreateSecurity - return SecurityName=" + security.getName() + ", CurrencyCode=" + security.getCurrencyCode()
+                        + ", TargetCurrencyCode="  + security.getTargetCurrencyCode() + ", ISIN="  + security.getIsin()); //$NON-NLS-1$
+
         return security;
     }
 

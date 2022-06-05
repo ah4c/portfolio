@@ -234,7 +234,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 .section("taxRefund", "currency").optional()
                 .match("^([\\s]+)?a([\\s]+)?b([\\s]+)?g([\\s]+)?e([\\s]+)?f([\\s]+)?.([\\s]+)?h([\\s]+)?r([\\s]+)?t([\\s]+)?e"
                                 + " ([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n"
-                                + " ([\\s_]+)?(?<currency>[\\w\\s_]+)"
+                                + " ([\\s_]+)?(?<currency>[A-Z\\s_]+)"
                                 + " ([\\s_]+)?\\-(?<taxRefund>[.,\\d\\s_]+)?$")
                 .assign((t, v) -> {
                     Money taxRefund = Money.of(asCurrencyCode(stripBlanksAndUnderscores(v.get("currency"))), asAmount(stripBlanksAndUnderscores(v.get("taxRefund"))));
@@ -253,6 +253,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     return new BuySellEntryItem(t);
                 });
 
+        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
         addTaxReturnBlock(type);
     }
@@ -379,6 +380,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 
                 .wrap(TransactionItem::new);
 
+        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
@@ -408,7 +410,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 + "([\\s]+)?G([\\s]+)?u([\\s]+)?n([\\s]+)?s([\\s]+)?t([\\s]+)?e([\\s]+)?n"
                                 + "([\\s]+)?n([\\s]+)?a([\\s]+)?c([\\s]+)?h"
                                 + "([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n([\\s]+)?:"
-                                + " ([\\s]+)?(?<currency>[\\w\\s]+)"
+                                + " ([\\s]+)?(?<currency>[A-Z\\s_]+)"
                                 + " ([\\s]+)?[\\.,\\d\\s]+([\\W]+)?$")
                 .assign((t, v) -> {
                     v.put("currency", stripBlanks(v.get("currency")));
@@ -433,7 +435,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 + "([\\s]+)?G([\\s]+)?u([\\s]+)?n([\\s]+)?s([\\s]+)?t([\\s]+)?e([\\s]+)?n"
                                 + "([\\s]+)?n([\\s]+)?a([\\s]+)?c([\\s]+)?h"
                                 + "([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n([\\s]+)?:"
-                                + " ([\\s]+)?(?<currency>[\\w\\s]+)"
+                                + " ([\\s]+)?(?<currency>[A-Z\\s_]+)"
                                 + " ([\\s]+)?(?<amount>[\\.,\\d\\s]+)([\\W]+)?$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(stripBlanks(v.get("currency"))));
@@ -573,7 +575,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 + "([\\s]+)?L([\\s]+)?a([\\s]+)?s([\\s]+)?t([\\s]+)?e([\\s]+)?n "
                                 + "([\\s]+)?n([\\s]+)?a([\\s]+)?c([\\s]+)?h "
                                 + "([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n([\\s]+)?: "
-                                + "[\\s]+(?<currency>[\\w\\s]+) "
+                                + "[\\s]+(?<currency>[A-Z\\s_]+) "
                                 + "([\\s]+)?(?<amount>[-\\.,\\d\\s]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(stripBlanksAndUnderscores(v.get("amount"))));
@@ -755,8 +757,18 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "amount").optional()
                 .match("^([\\s]+)?e([\\s]+)?r([\\s]+)?s([\\s]+)?t([\\s]+)?a([\\s]+)?t([\\s]+)?t([\\s]+)?e([\\s]+)?t([\\s]+)?e"
                                 + "([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n "
-                                + "([\\s]+)?(?<currency>[\\w\\s_]+) "
-                                + "([\\s_]+)?(?<amount>[-\\.,\\d\\s_]+).*$")
+                                + "([\\s]+)?(?<currency>[A-Z\\s_]+) "
+                                + "([\\s_]+)?(?<amount>[\\.,\\d\\s_]+).*$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(stripBlanksAndUnderscores(v.get("amount"))));
+                    t.setCurrencyCode(asCurrencyCode(stripBlanksAndUnderscores(v.get("currency"))));
+                })
+
+                // e r s ta t te t e S t e ue r n           E  U   R            3  .  5   3  9 , 5 8  U_ S_ D_ _ _ _ _ _ _ _  _ __ 3_ ._ _ 9_9 _ 9, _3 _ 7_   
+                .section("currency", "amount").optional()
+                .match("^([\\s]+)?e([\\s]+)?r([\\s]+)?s([\\s]+)?t([\\s]+)?a([\\s]+)?t([\\s]+)?t([\\s]+)?e([\\s]+)?t([\\s]+)?e([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n "
+                                + "([\\s]+)?[A-Z\\s_]+ ([\\s_]+)?[\\.,\\d\\s_]+ "
+                                + "([\\s]+)?(?<currency>[A-Z\\s_]+) ([\\s_]+)?(?<amount>[-\\.,\\d\\s_]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(stripBlanksAndUnderscores(v.get("amount"))));
                     t.setCurrencyCode(asCurrencyCode(stripBlanksAndUnderscores(v.get("currency"))));
@@ -770,8 +782,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 .match("^.* (Umrechn\\. zum Dev\\. kurs|Umrechnung zum Devisenkurs) (?<exchangeRate>[\\.,\\d]+).* : (?<baseCurrency>[\\w]{3}).*$")
                 .match("^([\\s]+)?e([\\s]+)?r([\\s]+)?s([\\s]+)?t([\\s]+)?a([\\s]+)?t([\\s]+)?t([\\s]+)?e([\\s]+)?t([\\s]+)?e"
                                 + "([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n "
-                                + "([\\s]+)?(?<currency>[\\w\\s_]+) "
-                                + "([\\s_]+)?(?<gross>[-\\.,\\d\\s_]+).*$")
+                                + "([\\s]+)?(?<currency>[A-Z\\s_]+) "
+                                + "([\\s_]+)?(?<gross>[\\.,\\d\\s_]+).*$")
                 .assign((t, v) -> {
                     if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                     {
@@ -780,6 +792,29 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         Money gross = Money.of(asCurrencyCode(stripBlanksAndUnderscores(v.get("currency"))), asAmount(stripBlanksAndUnderscores(v.get("gross"))));
                         Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
+
+                        checkAndSetGrossUnit(gross, fxGross, t, type);
+                    }
+                })
+
+                // e r s ta t te t e S t e ue r n            E  U   R           3  .  5   3  9 , 5 8  U_ S_ D_ _ _ _ _ _ _ _  _ __ 3_ ._ _ 9_9 _ 9, _3 _ 7_   
+                // Umrechnungen zum Devisenkurs       1,129900                                            
+                .section("fxCurrency", "fxGross", "currency", "gross", "exchangeRate").optional()
+                .match("^.* Kurswert ([\\s]+)?: ([\\s]+)?(?<termCurrency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+.*$")
+                .match("^([\\s]+)?e([\\s]+)?r([\\s]+)?s([\\s]+)?t([\\s]+)?a([\\s]+)?t([\\s]+)?t([\\s]+)?e([\\s]+)?t([\\s]+)?e([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n "
+                                + "([\\s]+)?(?<fxCurrency>[A-Z\\s_]+) ([\\s_]+)?(?<fxGross>[\\.,\\d\\s_]+) "
+                                + "([\\s]+)?(?<currency>[A-Z\\s_]+) ([\\s_]+)?(?<gross>[\\.,\\d\\s_]+)$")
+                .match("^^Umrechnungen zum Devisenkurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+).*$")
+                .assign((t, v) -> {
+                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
+                    v.put("baseCurrency", asCurrencyCode(v.get("currency")));
+
+                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                    {
+                        type.getCurrentContext().putType(asExchangeRate(v));
+
+                        Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                        Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
                         checkAndSetGrossUnit(gross, fxGross, t, type);
                     }
@@ -1106,6 +1141,15 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction
+                //                           Transaktionssteuer          : GBP              213,60 
+                .section("tax", "currency").optional()
+                .match("^.* Transaktionssteuer ([\\s]+)?: ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
+                .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)

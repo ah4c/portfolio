@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +26,8 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class DegiroPDFExtractor extends AbstractPDFExtractor
 {
+    private static final Logger LOG = Logger.getLogger(DegiroPDFExtractor.class.getName());
+
     private static class ExchangeRateHelper
     {
         private List<CurrencyExchangeItem> items = new ArrayList<>();
@@ -129,7 +132,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
-                    System.out.println("addDividendeTransaction - Dividend=" + t);
+                    LOG.fine("addDividendeTransaction - Dividend=" + t);
                 })
 
                 // Dividend date (Pay date): 2020-06-22
@@ -145,7 +148,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
-                    System.out.println("addDividendeTransaction - Dividend=" + t);
+                    LOG.fine("addDividendeTransaction - Dividend=" + t);
                 })
 
                 .wrap(TransactionItem::new);
@@ -269,7 +272,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             }
 
                             exchangeRateHelper.items.add(item);
-                            System.out.println("addAccountStatementTransactions - CurrencyExchangeItem=" + item);
+                            LOG.fine("addAccountStatementTransactions - CurrencyExchangeItem=" + item);
                             break;
                         }
                     }
@@ -328,7 +331,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
-                            System.out.println("addAccountStatementTransactions - Deposit=" + t);
+                            LOG.fine("addAccountStatementTransactions - Deposit=" + t);
                         })
 
                         .wrap(t -> new TransactionItem(t)));
@@ -370,7 +373,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
-                            System.out.println("addAccountStatementTransactions - Removal=" + t);
+                            LOG.fine("addAccountStatementTransactions - Removal=" + t);
                         })
 
                         .wrap(t -> new TransactionItem(t)));
@@ -505,7 +508,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             {
                                 t.setMonetaryAmount(money);
                             }
-                            System.out.println("addAccountStatementTransactions - dividend=" + t);
+                            LOG.fine("addAccountStatementTransactions - dividend=" + t);
                         })
 
                         // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividendensteuer USD -0,06 USD -0,06
@@ -543,7 +546,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                                 t.setAmount(t.getAmount() - tax.getAmount());
                             }
-                            System.out.println("addAccountStatementTransactions - currencyTax=" + t);
+                            LOG.fine("addAccountStatementTransactions - currencyTax=" + t);
                         })
 
                         //  06-06-2019 09:00 05-06-2019 SONY CORPORATION COMMO US8356993076 ADR/GDR Weitergabegebühr USD -0,04 USD -0,040
@@ -578,7 +581,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 t.addUnit(new Unit(Unit.Type.FEE, fee));
                                 t.setAmount(t.getAmount() - fee.getAmount());
                             }
-                            System.out.println("addAccountStatementTransactions - currencyFee=" + t);
+                            LOG.fine("addAccountStatementTransactions - currencyFee=" + t);
                         })
 
                         .wrap(t -> {
@@ -680,7 +683,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             {
                                 t.setType(AccountTransaction.Type.INTEREST);
                             }
-                            System.out.println("addAccountStatementTransactions - Interest=" + t);
+                            LOG.fine("addAccountStatementTransactions - Interest=" + t);
                         })
 
                         .wrap(t -> new TransactionItem(t)));
@@ -725,7 +728,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
-                            System.out.println("addAccountStatementTransactions - DepositFee=" + t);
+                            LOG.fine("addAccountStatementTransactions - DepositFee=" + t);
                         })
 
                         .wrap(t -> new TransactionItem(t)));
@@ -795,7 +798,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     {
                                         t.setType(AccountTransaction.Type.FEES_REFUND);
                                     }
-                                    System.out.println("addAccountStatementTransactions - 1 feeRefund=" + t);
+                                    LOG.fine("addAccountStatementTransactions - 1 feeRefund=" + t);
                                 }),
 
                             section -> section
@@ -818,7 +821,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     {
                                         t.setType(AccountTransaction.Type.FEES_REFUND);
                                     }
-                                    System.out.println("addAccountStatementTransactions - 2 feeRefund=" + t);
+                                    LOG.fine("addAccountStatementTransactions - 2 feeRefund=" + t);
                                 })
                         )
 
@@ -869,7 +872,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
-                            System.out.println("addAccountStatementTransactions - feeStrike=" + t);
+                            LOG.fine("addAccountStatementTransactions - feeStrike=" + t);
                         })
 
                         .wrap(t -> new TransactionItem(t)));
@@ -914,7 +917,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
-                            System.out.println("addAccountStatementTransactions - feeReturn=" + t);
+                            LOG.fine("addAccountStatementTransactions - feeReturn=" + t);
                         })
 
                         .wrap(t -> new TransactionItem(t)));
@@ -990,7 +993,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     {
                                         t.setShares(asShares(v.get("shares")));
                                     }
-                                    System.out.println("addDepotStatementTransactions - 1 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 1 - transaction=" + t);
                             }),
 
                             // @formatter:off
@@ -1031,7 +1034,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     {
                                         t.setShares(asShares(v.get("shares")));
                                     }
-                                    System.out.println("addDepotStatementTransactions - 2 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 2 - transaction=" + t);
                             }),
 
                             // @formatter:off
@@ -1077,7 +1080,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     {
                                         t.setShares(asShares(v.get("shares")));
                                     }
-                                    System.out.println("addDepotStatementTransactions - 3 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 3 - transaction=" + t);
                             }),
 
                             // @formatter:off
@@ -1122,7 +1125,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     {
                                         t.setShares(asShares(v.get("shares")));
                                     }
-                                    System.out.println("addDepotStatementTransactions - 4 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 4 - transaction=" + t);
                             }),
 
                             // @formatter:off
@@ -1191,7 +1194,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                                         t.getPortfolioTransaction().addUnit(grossValue);
                                     }
-                                    System.out.println("addDepotStatementTransactions - 5 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 5 - transaction=" + t);
                             }),
 
                             // @formatter:off
@@ -1260,7 +1263,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                                         t.getPortfolioTransaction().addUnit(grossValue);
                                     }
-                                    System.out.println("addDepotStatementTransactions - 6 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 6 - transaction=" + t);
                             }),
 
                             // @formatter:off
@@ -1314,7 +1317,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                                         t.getPortfolioTransaction().addUnit(grossValue);
                                     }
-                                    System.out.println("addDepotStatementTransactions - 7 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 7 - transaction=" + t);
                             }),
 
                             // @formatter:off
@@ -1369,7 +1372,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                                         t.getPortfolioTransaction().addUnit(grossValue);
                                     }
-                                    System.out.println("addDepotStatementTransactions - 8 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 8 - transaction=" + t);
                             }),
 
                             // @formatter:off
@@ -1438,7 +1441,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                                         t.getPortfolioTransaction().addUnit(grossValue);
                                     }
-                                    System.out.println("addDepotStatementTransactions - 9 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 9 - transaction=" + t);
                             }),
 
                             // @formatter:off
@@ -1508,7 +1511,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                                         t.getPortfolioTransaction().addUnit(grossValue);
                                     }
-                                    System.out.println("addDepotStatementTransactions - 10 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 10 - transaction=" + t);
                             }),
 
                             // @formatter:off
@@ -1554,7 +1557,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                                     Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
-                                    System.out.println("addDepotStatementTransactions - 11 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 11 - transaction=" + t);
                             }),
 
                             // @formatter:off
@@ -1598,7 +1601,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     }
                                     Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
-                                    System.out.println("addDepotStatementTransactions - 12 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 12 - transaction=" + t);
                             }),
 
                             // @formatter:off
@@ -1652,7 +1655,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                                         t.getPortfolioTransaction().addUnit(grossValue);
                                     }
-                                    System.out.println("addDepotStatementTransactions - 13 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 13 - transaction=" + t);
                             }),
 
                             // @formatter:off
@@ -1707,7 +1710,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                                         t.getPortfolioTransaction().addUnit(grossValue);
                                     }
-                                    System.out.println("addDepotStatementTransactions - 14 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 14 - transaction=" + t);
                             }),
 
                             // @formatter:off
@@ -1747,7 +1750,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     {
                                         t.setShares(asShares(v.get("shares")));
                                     }
-                                    System.out.println("addDepotStatementTransactions - 15 - transaction=" + t);
+                                    LOG.fine("addDepotStatementTransactions - 15 - transaction=" + t);
                             })
                         )
 

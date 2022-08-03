@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
@@ -31,6 +32,8 @@ import name.abuchen.portfolio.money.Values;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
+    private static final Logger LOG = Logger.getLogger(AbstractPDFExtractor.class.getName());
+
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
     private final Client client;
@@ -195,8 +198,10 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (security == null)
             throw new IllegalArgumentException("Unable to construct security: " + values.toString()); //$NON-NLS-1$
 
-        System.out.println("getOrCreateSecurity - return SecurityName=" + security.getName() + ", CurrencyCode=" + security.getCurrencyCode()
-                        + ", TargetCurrencyCode="  + security.getTargetCurrencyCode() + ", ISIN="  + security.getIsin()); //$NON-NLS-1$
+        LOG.info("getOrCreateSecurity - return SecurityName=" + security.getName() //$NON-NLS-1$
+                        + ", CurrencyCode=" + security.getCurrencyCode()  //$NON-NLS-1$
+                        + ", TargetCurrencyCode=" + security.getTargetCurrencyCode() //$NON-NLS-1$
+                        + ", ISIN=" + security.getIsin()); //$NON-NLS-1$
 
         return security;
     }

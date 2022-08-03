@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction;
@@ -24,6 +25,8 @@ import name.abuchen.portfolio.money.Values;
 
 public class CheckCurrenciesAction implements ImportAction
 {
+    private static final Logger LOG = Logger.getLogger(CheckCurrenciesAction.class.getName());
+
     private static final Set<AccountTransaction.Type> TRANSACTIONS_WO_UNITS = EnumSet.of(AccountTransaction.Type.BUY,
                     AccountTransaction.Type.SELL, AccountTransaction.Type.TRANSFER_IN);
 
@@ -142,9 +145,12 @@ public class CheckCurrenciesAction implements ImportAction
                 String grossValueCurrencyCode = grossValue.get().getForex() != null
                                 ? grossValue.get().getForex().getCurrencyCode() : ""; //$NON-NLS-1$
 
-                System.out.println("checkGrossValueAndUnitsAgainstSecurity - grossValueCurrencyCode=" + grossValueCurrencyCode + ", transaction.amount=" + transaction.getAmount() //$NON-NLS-1$
-                                + ", transactionCurrency=" + transaction.getCurrencyCode() + ", securityCurrencyCode=" + securityCurrency
-                                + ", transaction=" + transaction + ", transaction.class=" + transaction.getClass());//$NON-NLS-1$
+                LOG.info("checkGrossValueAndUnitsAgainstSecurity - grossValueCurrencyCode=" + grossValueCurrencyCode //$NON-NLS-1$
+                                + ", transaction.amount=" + transaction.getAmount() //$NON-NLS-1$
+                                + ", transactionCurrency=" + transaction.getCurrencyCode()  //$NON-NLS-1$
+                                + ", securityCurrencyCode=" + securityCurrency //$NON-NLS-1$
+                                + ", transaction=" + transaction  //$NON-NLS-1$
+                                + ", transaction.class=" + transaction.getClass());//$NON-NLS-1$
                 
                 return new Status(Status.Code.ERROR, MessageFormat.format(Messages.MsgCheckGrossValueUnitNotValid,
                                 grossValueCurrencyCode, securityCurrency));
@@ -161,9 +167,12 @@ public class CheckCurrenciesAction implements ImportAction
             // then gross value must be set
             Optional<Unit> grossValue = transaction.getUnit(Transaction.Unit.Type.GROSS_VALUE);
 
-            System.out.println("checkGrossValueAndUnitsAgainstSecurity - grossValueUnit=" + grossValue + ", transaction.amount=" + transaction.getAmount() //$NON-NLS-1$
-                                + ", transactionCurrency=" + transaction.getCurrencyCode() + ", securityCurrencyCode=" + securityCurrency
-                                + ", transaction=" + transaction + ", transaction.class=" + transaction.getClass());//$NON-NLS-1$
+            LOG.info("checkGrossValueAndUnitsAgainstSecurity - grossValueUnit=" + grossValue  //$NON-NLS-1$
+                            + ", transaction.amount=" + transaction.getAmount() //$NON-NLS-1$
+                                + ", transactionCurrency=" + transaction.getCurrencyCode()  //$NON-NLS-1$
+                                + ", securityCurrencyCode=" + securityCurrency  //$NON-NLS-1$
+                                + ", transaction=" + transaction  //$NON-NLS-1$
+                                + ", transaction.class=" + transaction.getClass());//$NON-NLS-1$
 
             if (!grossValue.isPresent())
                 return new Status(Status.Code.ERROR, MessageFormat.format(Messages.MsgCheckGrossValueUnitMissing,

@@ -97,12 +97,11 @@ public class AccountTransaction extends Transaction
     @Override
     public String toString()
     {
-        return String.format("%s %-17s %s %9s %s %s %s", //$NON-NLS-1$
-                        Values.Date.format(getDateTime().toLocalDate()), //
+        return String.format("%s %-17s %s %9s %s %s", //$NON-NLS-1$
+                        getDateTime() != null ? Values.Date.format(getDateTime().toLocalDate()) : "", //
                         type.name(), //
                         getCurrencyCode(), //
                         Values.Amount.format(getAmount()), //
-                        getGrossValue().toString(),
                         getSecurity() != null ? getSecurity().getName() : "<no Security>", //$NON-NLS-1$
                         getCrossEntry() != null && getCrossEntry().getCrossOwner(this) != null
                                         ? getCrossEntry().getCrossOwner(this).toString()

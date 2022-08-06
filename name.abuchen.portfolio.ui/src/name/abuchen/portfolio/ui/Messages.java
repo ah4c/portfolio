@@ -716,6 +716,7 @@ public class Messages extends NLS
     public static String LabelSaving;
     public static String LabelSearch;
     public static String LabelSecurities;
+    public static String LabelSecurityLatestPrice;
     public static String LabelSecurityPerformance;
     public static String LabelSecurityTransfer;
     public static String LabelSecurityCalendar;
@@ -825,6 +826,7 @@ public class Messages extends NLS
     public static String MenuApplyToAllWidgets;
     public static String MenuChangeHeight;
     public static String MenuChartAdjustRange;
+    public static String MenuChartShowYAxis;
     public static String MenuChartYScrollDown;
     public static String MenuChartYScrollUp;
     public static String MenuChartXScrollDown;
@@ -833,6 +835,7 @@ public class Messages extends NLS
     public static String MenuChartXZoomOut;
     public static String MenuChartYZoomIn;
     public static String MenuChartYZoomOut;
+    public static String MenuChangeUrl;
     public static String MenuChooseClientFilter;
     public static String MenuConfigureChart;
     public static String MenuConfigureCurrentDashboard;
@@ -1186,14 +1189,17 @@ public class Messages extends NLS
     public static String TooltipPortfolioTaxRate;
     public static String TooltipQuoteAtDate;
     public static String TooltipRebalancingIndicator;
+    public static String TooltipSecurityLatestPrice;
     public static String TooltipSemiVolatility;
     public static String TooltipTurnoverRate;
     public static String TooltipVolatility;
+    public static String Url;
     public static String WatchlistDelete;
     public static String WatchlistEditDialog;
     public static String WatchlistEditDialogMsg;
     public static String WatchlistNewLabel;
     public static String WatchlistRename;
+    public static String Website;
     public static String BookmarkMenu_EditBookmarks;
     public static String FilterNotRetired;
     public static String MenuFilterTrades;
